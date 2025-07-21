@@ -19,6 +19,10 @@ export default function Home() {
         }
     };
 
+    const loadFavorites = () => {
+        setImg(localStorage.getItem("image"));
+    }
+
     useEffect(() => {
         localStorage.setItem('image', JSON.stringify(img));
     }, [img]);
@@ -29,7 +33,7 @@ export default function Home() {
         setError(null)
 
         try {
-            const server = 'http://localhost:4000'
+            const server = 'http://localhost:3000'
 
             const formData = new FormData(event.currentTarget)
             const response = await fetch(`${server}/api/images/generate`, {
@@ -66,6 +70,12 @@ export default function Home() {
                   <button onClick={handleLike}>
                       {isLiked ? '❤️ Liked' : '🤍 Like'}
                   </button>
+                  <div>
+                      <label>Favorites images</label>
+                      <button onClick={loadFavorites}>
+                          <img src={img} alt="image" />
+                      </button>
+                  </div>
               </div>
           )}
       </main>
