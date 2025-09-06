@@ -24,6 +24,10 @@ export const siteConfig = {
       label: "About",
       href: "/about",
     },
+    {
+      label: "Image Generator",
+      href: "/image-generator",
+    },
   ],
   navMenuItems: [
     {
