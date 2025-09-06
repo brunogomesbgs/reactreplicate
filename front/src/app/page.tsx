@@ -48,6 +48,7 @@ export default function Home() {
             const data = await response.json()
             setImg(data.image)
         } catch (error) {
+            // @ts-ignore
             setError(error.message)
         } finally {
             setIsLoading(false)

@@ -17,7 +17,7 @@ export const ImageGeneratorForm = () => {
     setImageUrl("");
 
     try {
-      const response = await fetch(process.env.NEXT_BACK_URL + "/api/images/generate", {
+      const response = await fetch( "http://localhost:4000/api/images/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
