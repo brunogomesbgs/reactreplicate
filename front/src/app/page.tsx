@@ -33,7 +33,7 @@ export default function Home() {
         setError(null)
 
         try {
-            const server = 'http://localhost:3000'
+            const server = 'http://localhost:4000'
 
             const formData = new FormData(event.currentTarget)
             const response = await fetch(`${server}/api/images/generate`, {
