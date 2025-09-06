@@ -29,9 +29,11 @@ export const ImageGeneratorForm = () => {
         throw new Error("Failed to generate image.");
       }
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setImageUrl(url);
+      const data = await response.json();
+      if (!data.image) {
+        throw new Error("No image URL found in the response.");
+      }
+      setImageUrl(data.image);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
