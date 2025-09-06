@@ -4,21 +4,26 @@ const Replicate = require('replicate');
 const replicate = new Replicate({auth: process.env.REPLICATE_API_TOKEN})
 
 exports.generate = asyncHandler(async (req, res, next) => {
-    try {
-        if (req.body.prompt === '') {
-            req.body.prompt = 'draw a house facade with wood and glass'
-        }
+    const { prompt } = req.body;
 
-        const model = "black-forest-labs/flux-pro"
-        const input = {
-            prompt: `${req.body.prompt}`
-        };
-        const [output] = await replicate.run(model, { input });
-        res.status(200).send({ message: `Image generated from prompt: ${req.body.prompt}`, image: output.result });
-        next()
+    if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+        const error = new Error('Prompt is required and must be a non-empty string.');
+        error.status = 400;
+        return next(error);
     }
-    catch (e) {
-        //res.status(400).end({ message: `Error when creating an user, ${e}` });
-        return next(`Error when generate an image, ${e}`)
+
+    const model = "black-forest-labs/flux-1.1-pro";
+    const input = {
+        prompt: prompt
+    };
+
+    const output = await replicate.run(model, { input });
+
+    if (!output || !Array.isArray(output) || output.length === 0) {
+        const error = new Error('Failed to generate image or received an empty response.');
+        error.status = 500;
+        return next(error);
     }
-})
+
+    res.status(200).json({ image: output[0] });
+});
