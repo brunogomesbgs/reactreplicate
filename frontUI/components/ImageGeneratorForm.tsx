@@ -17,12 +17,12 @@ export const ImageGeneratorForm = () => {
     setImageUrl("");
 
     try {
-      const response = await fetch("http://localhost:4000/api/images/generate", {
+      const response = await fetch(process.env.NEXT_BACK_URL + "/api/images/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ 'prompt': prompt }),
       });
 
       if (!response.ok) {
