@@ -1,12 +1,16 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { ImageGeneratorForm } from '../ImageGeneratorForm'
+import expect from "expect";
 
 // Mock fetch
+
+// @ts-ignore
 global.fetch = jest.fn();
 
 describe('ImageGeneratorForm', () => {
   beforeEach(() => {
-    (fetch as jest.Mock).mockClear();
+      // @ts-ignore
+      (fetch as jest.Mock).mockClear();
   });
 
   it('renders the form correctly', () => {
@@ -23,7 +27,8 @@ describe('ImageGeneratorForm', () => {
   })
 
   it('shows loading state on submit', async () => {
-    (fetch as jest.Mock).mockImplementationOnce(() => new Promise(() => {})); // Prevent promise from resolving
+    // @ts-ignore
+      (fetch as jest.Mock).mockImplementationOnce(() => new Promise(() => {})); // Prevent promise from resolving
     render(<ImageGeneratorForm />)
     const button = screen.getByRole('button', { name: /generate image/i })
     fireEvent.click(button)
@@ -36,7 +41,8 @@ describe('ImageGeneratorForm', () => {
 
   it('handles successful API response', async () => {
     const mockUrl = 'mock-url';
-    (fetch as jest.Mock).mockResolvedValueOnce({
+    // @ts-ignore
+      (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve({ image: mockUrl }),
     });
@@ -54,7 +60,8 @@ describe('ImageGeneratorForm', () => {
   });
 
   it('handles API error', async () => {
-    (fetch as jest.Mock).mockResolvedValueOnce({
+    // @ts-ignore
+      (fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
     });
 
