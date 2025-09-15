@@ -96,7 +96,7 @@ export default function AdminPage() {
         }
 
         try {
-            const response = await fetch("/api/admin/sinduscon", {
+            const response = await fetch("/api/sinduscon", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -104,7 +104,8 @@ export default function AdminPage() {
                 body: JSON.stringify({
                     mes: currentMonth,
                     ano: currentYear,
-                    valores: { dados: filteredEstados }
+                    values: { estados: filteredEstados },
+                    estado: filteredEstados
                 }),
             });
 
