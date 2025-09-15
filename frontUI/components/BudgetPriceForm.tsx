@@ -438,7 +438,7 @@ export default function BudgetPriceForm({
             setFilteredClients(clients);
         } else {
             setFilteredClients(
-                clients.filter((c) =>
+                clients.filter((c: { name: string; }) =>
                     c.name.toLowerCase().includes(clientSearch.toLowerCase())
                 )
             );
@@ -624,7 +624,7 @@ export default function BudgetPriceForm({
                                 {clientId &&
                                     (() => {
                                         const selectedClient = clients.find(
-                                            (c) => c.id === clientId
+                                            (c: { id: string; }) => c.id === clientId
                                         );
                                         if (!selectedClient) return null;
 
@@ -1756,7 +1756,7 @@ export default function BudgetPriceForm({
                                                     fontSize={12}
                                                     tickLine={false}
                                                     axisLine={false}
-                                                    tickFormatter={(value) =>
+                                                    tickFormatter={(value: number) =>
                                                         `${getCurrencySymbol()} ${(value / 1000).toFixed(0)}k`
                                                     }
                                                 />
@@ -1767,7 +1767,7 @@ export default function BudgetPriceForm({
                                                         })}`,
                                                         "Valor",
                                                     ]}
-                                                    labelFormatter={(label) => label}
+                                                    labelFormatter={(label: any) => label}
                                                     contentStyle={{
                                                         backgroundColor: "white",
                                                         border: "1px solid #e5e7eb",
