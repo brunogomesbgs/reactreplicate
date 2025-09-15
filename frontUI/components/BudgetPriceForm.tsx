@@ -298,7 +298,7 @@ export default function BudgetPriceForm({
             }
             if (workStandard === "alto") {
                 // Padrões de projeto para comercial de padrão alto.
-                return ["csl16"].includes(standard);
+                return ["csl8", "csl16"].includes(standard);
             }
         }
 
