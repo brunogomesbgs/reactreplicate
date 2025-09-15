@@ -292,14 +292,8 @@ export default function BudgetPriceForm({
 
         // Lógica para o modelo "Comercial", baseada no padrão de obra.
         if (workModel === "comercial") {
-            if (workStandard === "medio") {
-                // Padrões de projeto para comercial de padrão médio/normal.
-                return ["cal8", "csl8"].includes(standard);
-            }
-            if (workStandard === "alto") {
-                // Padrões de projeto para comercial de padrão alto.
-                return ["csl8", "csl16"].includes(standard);
-            }
+            // Para o modelo "Comercial", os padrões de projeto "cal8", "csl8", e "csl16" estão sempre disponíveis.
+            return ["cal8", "csl8", "csl16"].includes(standard);
         }
 
         // Lógica para o modelo "Especiais".
@@ -1442,7 +1436,7 @@ export default function BudgetPriceForm({
                                     className={`border rounded-lg p-5 cursor-pointer transition-colors ${
                                         projectStandard === "cal8" && workModel === "comercial"
                                             ? "border-indigo-600 bg-indigo-50"
-                                            : canSelectProjectStandard("r16")
+                                            : canSelectProjectStandard("cal8")
                                                 ? "bg-white hover:border-gray-300"
                                                 : "bg-gray-100 cursor-not-allowed opacity-50"
                                     }`}
@@ -1485,7 +1479,7 @@ export default function BudgetPriceForm({
                                     className={`border rounded-lg p-5 cursor-pointer transition-colors ${
                                         projectStandard === "csl8" && workModel === "comercial"
                                             ? "border-indigo-600 bg-indigo-50"
-                                            : canSelectProjectStandard("r16")
+                                            : canSelectProjectStandard("csl8")
                                                 ? "bg-white hover:border-gray-300"
                                                 : "bg-gray-100 cursor-not-allowed opacity-50"
                                     }`}
