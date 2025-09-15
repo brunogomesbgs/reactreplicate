@@ -71,6 +71,30 @@ export default function AdminPage() {
         console.log(data)
         setIsLoading(true);
 
+        const hasContent = (obj: any): boolean => {
+            if (obj === null || obj === undefined) {
+                return false;
+            }
+            if (typeof obj === 'number') {
+                return obj !== 0;
+            }
+            if (typeof obj === 'object') {
+                return Object.values(obj).some(hasContent);
+            }
+            return false;
+        };
+
+        const filteredEstados = data.estados.filter(estado => {
+            const { estado: sigla, ...rest } = estado;
+            return hasContent(rest);
+        });
+
+        if (filteredEstados.length === 0) {
+            toast.info("Nenhum dado para salvar. Preencha pelo menos um campo.");
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const response = await fetch("/api/admin/sinduscon", {
                 method: "POST",
@@ -80,8 +104,7 @@ export default function AdminPage() {
                 body: JSON.stringify({
                     mes: currentMonth,
                     ano: currentYear,
-                    values: data,
-                    estado: data.estados
+                    valores: { dados: filteredEstados }
                 }),
             });
 
