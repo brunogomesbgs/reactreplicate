@@ -271,27 +271,49 @@ export default function BudgetPriceForm({
 
     // Função para verificar se um padrão pode ser selecionado
     const canSelectProjectStandard = (standard: string) => {
-        // Personalizado sempre disponível
+        // "Personalizado" é sempre uma opção válida, independente do modelo ou padrão.
         if (standard === "personalizado") return true;
 
-        if (!workStandard) return true;
-
-        // Se padrão alto está selecionado, só pode selecionar R-8, R-16
-        if (workStandard === "alto") {
-            return ["r8", "r16", "cal8", "csl8", "csl16", "gi"].includes(standard);
+        // Lógica para o modelo "Residencial", baseada no padrão de obra.
+        if (workModel === "residencial") {
+            if (workStandard === "baixo") {
+                // Padrões de projeto para residencial de padrão baixo.
+                return ["r1", "pp4", "r8", "pis"].includes(standard);
+            }
+            if (workStandard === "medio") {
+                // Padrões de projeto para residencial de padrão médio.
+                return ["r1", "pp4", "r8", "r16"].includes(standard);
+            }
+            if (workStandard === "alto") {
+                // Padrões de projeto para residencial de padrão alto.
+                return ["r8", "r16"].includes(standard);
+            }
         }
 
-        // Se padrão médio está selecionado, pode selecionar R-1, PP-4, R-8, R-16
-        if (workStandard === "medio") {
-            return ["r1", "pp4", "r8", "r16", "cal8", "csl8", "csl16", "gi"].includes(standard);
+        // Lógica para o modelo "Comercial", baseada no padrão de obra.
+        if (workModel === "comercial") {
+            if (workStandard === "medio") {
+                // Padrões de projeto para comercial de padrão médio/normal.
+                return ["cal8", "csl8"].includes(standard);
+            }
+            if (workStandard === "alto") {
+                // Padrões de projeto para comercial de padrão alto.
+                return ["csl16"].includes(standard);
+            }
         }
 
-        // Se padrão baixo está selecionado, pode selecionar R-1, PP-4, R-8, PIS (não implementado ainda)
-        if (workStandard === "baixo") {
-            return ["r1", "pp4", "r8", "pis", "rp1q"].includes(standard);
+        // Lógica para o modelo "Especiais".
+        if (workModel === "especiais") {
+            // Para "Especiais", o padrão de obra é sempre "medio",
+            // e os padrões de projeto são "GI" (Galpão Industrial) e "RP1Q" (Residencial Popular).
+            return ["gi", "rp1q"].includes(standard);
         }
 
-        return true;
+        // Se nenhum modelo ou padrão de obra for selecionado, permite a seleção para evitar travar a UI.
+        if (!workModel || !workStandard) return true;
+
+        // Se nenhuma das condições acima for atendida, o padrão de projeto não é selecionável.
+        return false;
     };
 
     // Estados para ajuste de valor
@@ -395,6 +417,15 @@ export default function BudgetPriceForm({
             setCustomValue(0);
         }
     }, [workStandard, projectStandard]);
+
+    // Limpar padrão de obra quando modelo de obra mudar para incompatível
+    useEffect(() => {
+        if (workModel === "especiais") {
+            setWorkStandard("medio");
+        } else if (workModel === "comercial" && workStandard === "baixo") {
+            setWorkStandard(null);
+        }
+    }, [workModel]);
 
     // Gerar projetos quando as seleções mudarem
     useEffect(() => {
@@ -1073,23 +1104,28 @@ export default function BudgetPriceForm({
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {/* Padrão baixo */}
                                 <div
-                                    className={`border rounded-lg p-5  transition-colors ${
-                                        (workStandard === "baixo" && workModel !== "comercial")
-                                            ? "border-indigo-600 bg-indigo-50 cursor-pointer"
-                                            : "bg-white hover:border-gray-300"
+                                    className={`border rounded-lg p-5 transition-colors ${
+                                        workModel === 'residencial'
+                                            ? workStandard === 'baixo'
+                                                ? 'border-indigo-600 bg-indigo-50 cursor-pointer'
+                                                : 'bg-white hover:border-gray-300 cursor-pointer'
+                                            : 'bg-gray-100 cursor-not-allowed opacity-50'
                                     }`}
-                                    onClick={() => setWorkStandard("baixo")}
+                                    onClick={() => {
+                                        if (workModel === 'residencial') {
+                                            setWorkStandard('baixo');
+                                        }
+                                    }}
                                 >
                                     <div className="flex items-center gap-3 mb-4">
                                         <div
                                             className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                                                workStandard === "baixo"
-                                                    ? "border-indigo-600"
-                                                    : "border-gray-300"
+                                                workStandard === 'baixo' ? 'border-indigo-600' : 'border-gray-300'
                                             }`}
                                         >
-                                            {workStandard === "baixo" && (
+                                            {workStandard === 'baixo' && (
                                                 <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
                                             )}
                                         </div>
@@ -1102,23 +1138,28 @@ export default function BudgetPriceForm({
                                     </div>
                                 </div>
 
+                                {/* Padrão médio */}
                                 <div
-                                    className={`border rounded-lg p-5 cursor-pointer transition-colors ${
-                                        workStandard === "medio"
-                                            ? "border-indigo-600 bg-indigo-50"
-                                            : "bg-white hover:border-gray-300"
+                                    className={`border rounded-lg p-5 transition-colors ${
+                                        workModel === 'especiais'
+                                            ? 'border-indigo-600 bg-indigo-50 cursor-not-allowed'
+                                            : workStandard === 'medio'
+                                                ? 'border-indigo-600 bg-indigo-50 cursor-pointer'
+                                                : 'bg-white hover:border-gray-300 cursor-pointer'
                                     }`}
-                                    onClick={() => setWorkStandard("medio")}
+                                    onClick={() => {
+                                        if (workModel !== 'especiais') {
+                                            setWorkStandard('medio');
+                                        }
+                                    }}
                                 >
                                     <div className="flex items-center gap-3 mb-4">
                                         <div
                                             className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                                                workStandard === "medio"
-                                                    ? "border-indigo-600"
-                                                    : "border-gray-300"
+                                                workStandard === 'medio' ? 'border-indigo-600' : 'border-gray-300'
                                             }`}
                                         >
-                                            {workStandard === "medio" && (
+                                            {workStandard === 'medio' && (
                                                 <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
                                             )}
                                         </div>
@@ -1131,23 +1172,28 @@ export default function BudgetPriceForm({
                                     </div>
                                 </div>
 
+                                {/* Padrão alto */}
                                 <div
-                                    className={`border rounded-lg p-5 cursor-pointer transition-colors ${
-                                        workStandard === "alto"
-                                            ? "border-indigo-600 bg-indigo-50"
-                                            : "bg-white hover:border-gray-300"
+                                    className={`border rounded-lg p-5 transition-colors ${
+                                        workModel === 'comercial' || workModel === 'residencial'
+                                            ? workStandard === 'alto'
+                                                ? 'border-indigo-600 bg-indigo-50 cursor-pointer'
+                                                : 'bg-white hover:border-gray-300 cursor-pointer'
+                                            : 'bg-gray-100 cursor-not-allowed opacity-50'
                                     }`}
-                                    onClick={() => setWorkStandard("alto")}
+                                    onClick={() => {
+                                        if (workModel === 'comercial' || workModel === 'residencial') {
+                                            setWorkStandard('alto');
+                                        }
+                                    }}
                                 >
                                     <div className="flex items-center gap-3 mb-4">
                                         <div
                                             className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                                                workStandard === "alto"
-                                                    ? "border-indigo-600"
-                                                    : "border-gray-300"
+                                                workStandard === 'alto' ? 'border-indigo-600' : 'border-gray-300'
                                             }`}
                                         >
-                                            {workStandard === "alto" && (
+                                            {workStandard === 'alto' && (
                                                 <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
                                             )}
                                         </div>
